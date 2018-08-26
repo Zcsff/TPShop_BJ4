@@ -1,3 +1,5 @@
+from time import sleep
+
 import allure
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
@@ -30,3 +32,32 @@ class BaseAction:
     def press_enter(self):
         self.driver.press_keycode(66)
 
+    def find_toast(self, message, timeout=3):
+        """
+        # message: 预期要获取的toast的部分消息
+        """
+        message = "//*[contains(@text,'" + message + "')]"  # 使用包含的方式定位
+
+        element = self.find_element((By.XPATH, message), timeout, 0.1)
+        return element.text
+
+    @allure.step(title="判断toast是否存在")
+    def is_toast_exist(self, message):
+        try:
+            self.find_toast(message)
+            return True
+        except Exception:
+            return False
+
+    def is_location_enabled(self, location):
+        return self.find_element(location).get_attribute("enabled") == "true"
+
+    def is_location_clickable(self, location):
+        return self.find_element(location).get_attribute("clickable") == "true"
+
+    def is_location_exist(self, location):
+        try:
+            self.find_element(location)
+            return True
+        except:
+            return False
